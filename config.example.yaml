@@ -1,0 +1,38 @@
+# 轮询间隔（秒）
+poll_interval_seconds: 60
+
+# 监控的 up 主列表
+bilibili_users:
+  - mid: 322005137
+    name: "史诗级韭菜"
+    fetch:
+      dynamic: true
+      video: true
+      article: true
+
+# 通知渠道配置
+notifications:
+  telegram:
+    enabled: true
+    bot_token: ""
+    chat_id: ""
+  email:
+    enabled: false
+    smtp_host: "smtp.example.com"
+    smtp_port: 587
+    use_tls: true
+    username: "user@example.com"
+    password: "your_password"
+    from_addr: "user@example.com"
+    to_addrs:
+      - "target@example.com"
+  serverchan:
+    enabled: false
+    sendkey: "SCTxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# 用于记录已经通知过的动态 id
+state_file: state.json
+
+# 可选：添加认证 Cookie（如 SESSDATA）以减少风控
+auth_cookies:
+  sessdata: "your_sessdata_here"

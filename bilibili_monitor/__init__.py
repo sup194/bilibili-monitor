@@ -1,0 +1,1 @@
+"""Bilibili notification demo package."""
