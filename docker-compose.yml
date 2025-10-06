@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  bilibili-monitor:
+    image: ${IMAGE:-bilibili-monitor}
+    build:
+      context: .
+    network_mode: host
+    environment:
+      HTTP_PROXY: ${HTTP_PROXY_URL:-http://127.0.0.1:7890}
+      HTTPS_PROXY: ${HTTP_PROXY_URL:-http://127.0.0.1:7890}
+    volumes:
+      - ./config.yaml:/config/config.yaml:ro
+      - ./state:/data

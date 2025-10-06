@@ -29,12 +29,11 @@
 3. 运行脚本：
 
    ```bash
-   make run
+   python main.py --config config.yaml
    ```
 
    - 默认会每隔 `poll_interval_seconds` 轮询一次。
-   - 开发调试时可以使用 `make once` 只执行一次轮询。
-   - 需要先安装依赖的话，执行 `make install`。
+   - 调试时可添加 `--once --log-level INFO` 仅执行一次轮询。
 
 ### Docker 运行
 
@@ -53,15 +52,24 @@
 3. 启动容器（把当前目录中的配置和状态目录挂载进去）：
 
    ```bash
-   make docker-run
+   make run
    ```
 
-   - 如果只想执行单次轮询，可覆盖命令：
+   - `make run` 会构建镜像并通过 Compose 以宿主机网络模式启动服务，`HTTP_PROXY_URL` 可在命令前覆盖或在 `Makefile` 中修改默认值。停止服务可使用 `make down`。
 
-     ```bash
-     make docker-once
-     ```
-   - 默认 `make docker-run` 会把 `HTTP_PROXY=$(HTTP_PROXY_URL)`（同 `HTTPS_PROXY`）注入容器；可以在命令前设置 `HTTP_PROXY_URL` 或修改 `Makefile` 里的默认值。
+### Docker Compose 运行
+
+1. （推荐）直接使用 `make run` 构建并启动，命令会自动创建 `state/` 与默认 `config.yaml`（如不存在）。
+
+2. 手动操作时，可执行下列命令（需要 Docker 引擎支持 `network_mode: host`，在 Linux 上可用）：
+
+   ```bash
+   docker compose up -d
+   ```
+
+   - 默认会构建镜像并在容器内使用宿主机网络，方便访问本地代理。
+   - 如需调整代理地址，可在命令前设置 `HTTP_PROXY_URL=http://your-proxy:port`，或在运行时设置 `HTTP_PROXY`/`HTTPS_PROXY`。
+   - 停止服务：`docker compose down` 或 `make down`。
 
 ## 设计说明
 
