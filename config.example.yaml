@@ -16,6 +16,7 @@ notifications:
     enabled: true
     bot_token: ""
     chat_id: ""
+    proxy_env_var: "HTTP_PROXY"
   email:
     enabled: false
     smtp_host: "smtp.example.com"

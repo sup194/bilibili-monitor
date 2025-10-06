@@ -2,10 +2,11 @@
 from __future__ import annotations
 
 import logging
+import os
 import smtplib
 from abc import ABC, abstractmethod
 from email.message import EmailMessage
-from typing import Iterable, List, Sequence
+from typing import Iterable, List, Optional, Sequence
 
 import requests
 
@@ -27,9 +28,12 @@ class Notifier(ABC):
 
 
 class TelegramNotifier(Notifier):
-    def __init__(self, bot_token: str, chat_id: str) -> None:
+    def __init__(self, bot_token: str, chat_id: str, proxy_url: Optional[str] = None) -> None:
         self.bot_token = bot_token
         self.chat_id = chat_id
+        self.proxies = None
+        if proxy_url:
+            self.proxies = {"http": proxy_url, "https": proxy_url}
 
     def send(self, item: ContentItem) -> None:
         text = "\n".join(item.to_notification_lines())
@@ -39,7 +43,10 @@ class TelegramNotifier(Notifier):
             "text": text,
             "disable_web_page_preview": False,
         }
-        response = requests.post(url, json=payload, timeout=10)
+        request_kwargs = {"json": payload, "timeout": 10}
+        if self.proxies:
+            request_kwargs["proxies"] = self.proxies
+        response = requests.post(url, **request_kwargs)
         try:
             response.raise_for_status()
             data = response.json()
@@ -119,7 +126,24 @@ def build_notifiers(config: Config) -> List[Notifier]:
         if not (t_cfg.bot_token and t_cfg.chat_id):
             logger.warning("Telegram notifier enabled but bot_token/chat_id missing")
         else:
-            notifiers.append(TelegramNotifier(t_cfg.bot_token, t_cfg.chat_id))
+            proxy_url = None
+            env_candidates = []
+            if t_cfg.proxy_env_var:
+                env_candidates.append(t_cfg.proxy_env_var)
+            else:
+                env_candidates.extend(["HTTPS_PROXY", "HTTP_PROXY"])
+
+            for env_name in env_candidates:
+                proxy_url = os.getenv(env_name) or os.getenv(env_name.lower())
+                if proxy_url:
+                    break
+
+            if t_cfg.proxy_env_var and not proxy_url:
+                logger.warning(
+                    "Telegram proxy env var %s is not set or empty", t_cfg.proxy_env_var
+                )
+
+            notifiers.append(TelegramNotifier(t_cfg.bot_token, t_cfg.chat_id, proxy_url))
 
     if config.notifications.email.enabled:
         e_cfg = config.notifications.email

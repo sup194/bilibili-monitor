@@ -28,6 +28,7 @@ class TelegramConfig:
     enabled: bool = False
     bot_token: Optional[str] = None
     chat_id: Optional[str] = None
+    proxy_env_var: Optional[str] = None
 
 
 @dataclass
@@ -97,10 +98,14 @@ def _load_user_config(raw: dict) -> BilibiliUserConfig:
 def _load_telegram_config(raw: Optional[dict]) -> TelegramConfig:
     if raw is None:
         return TelegramConfig()
+    proxy_env_var = raw.get("proxy_env_var")
+    if proxy_env_var:
+        proxy_env_var = str(proxy_env_var).strip() or None
     return TelegramConfig(
         enabled=bool(raw.get("enabled", False)),
         bot_token=raw.get("bot_token"),
         chat_id=raw.get("chat_id"),
+        proxy_env_var=proxy_env_var,
     )
 
 

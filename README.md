@@ -20,7 +20,7 @@
 
    - `bilibili_users`：填写需要关注的 up 主 `mid`，可选配置 `name` 方便日志阅读。
    - `fetch`：控制是否拉取动态/视频/专栏。
-   - `notifications.telegram`：启用后需要设置 Telegram Bot Token 和 Chat ID。
+   - `notifications.telegram`：启用后需要设置 Telegram Bot Token 和 Chat ID，默认读取 `HTTP_PROXY`/`HTTPS_PROXY` 环境变量，也可通过 `proxy_env_var` 指定其他代理变量（值形如 `socks5://127.0.0.1:1080`）。
    - `notifications.email`：启用后需要设置 SMTP 的登录信息。
    - `notifications.serverchan`：启用 Server 酱 Turbo 通知时填写 SendKey（如 `SCTxxxxxxxx...`）。
    - `auth_cookies.sessdata`：如需访问受限接口，可填写从浏览器复制的 `SESSDATA`（注意风险，勿泄露）。
@@ -61,6 +61,7 @@
      ```bash
      make docker-once
      ```
+   - 默认 `make docker-run` 会把 `HTTP_PROXY=$(HTTP_PROXY_URL)`（同 `HTTPS_PROXY`）注入容器；可以在命令前设置 `HTTP_PROXY_URL` 或修改 `Makefile` 里的默认值。
 
 ## 设计说明
 
