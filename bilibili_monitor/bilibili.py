@@ -47,9 +47,6 @@ DEFAULT_HEADERS = {
     "Sec-Fetch-Site": "same-site",
 }
 
-for _env_var in ("http_proxy", "https_proxy", "all_proxy", "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY"):
-    os.environ.pop(_env_var, None)
-
 
 _SESSION = cffi_requests.Session(
     impersonate="chrome",
